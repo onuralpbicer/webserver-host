@@ -1,0 +1,22 @@
+{
+    "name": "webserver-host",
+    "version": "0.0.1",
+    "description": "A webserver that hosts a variety of UIs and web servers, routed based on the subdomain",
+    "main": "dist/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon ./src/index.ts"
+    },
+    "author": "Onur Alp Bicer",
+    "license": "ISC",
+    "dependencies": {
+        "dotenv": "^16.0.3",
+        "mime": "^3.0.0"
+    },
+    "devDependencies": {
+        "@types/mime": "^3.0.1",
+        "nodemon": "^2.0.22",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.0.4"
+    }
+}
