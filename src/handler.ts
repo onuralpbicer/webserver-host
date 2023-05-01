@@ -4,17 +4,12 @@ import { getSubdomain, getFilePath, isWithinProject } from './utils'
 import { streamApiToResponse, streamFileToResponse } from './stream'
 import fs from 'fs'
 import chokidar from 'chokidar'
-
-const baseLocation =
-    process.env['BASE_LOCATION'] ?? path.join(process.cwd(), 'apps')
-const portFile = process.env['PORT_FILE'] ?? '.port'
-
-const baseApiPath = process.env['BASE_API_PATH'] ?? 'api'
+import { BASE_API_PATH, PORT_FILE, PROJECTS_BASE_LOCATION } from './environment'
 
 // Watch for the projects folder and read the port from the .port file
 const projectPortMap = new Map<string, number>()
-chokidar.watch(baseLocation).on('all', (eventName, filename) => {
-    if (!filename.endsWith(portFile)) return
+chokidar.watch(PROJECTS_BASE_LOCATION).on('all', (eventName, filename) => {
+    if (!filename.endsWith(PORT_FILE)) return
 
     const projectName = filename.split(path.sep).at(-2)
     if (!projectName) return
@@ -30,7 +25,7 @@ chokidar.watch(baseLocation).on('all', (eventName, filename) => {
 const handler: http.RequestListener = (req, res) => {
     const project = getSubdomain(req.headers.host ?? '') || 'index'
 
-    const projectDir = path.join(baseLocation, project)
+    const projectDir = path.join(PROJECTS_BASE_LOCATION, project)
     const filePath = getFilePath(req.url)
 
     const fileLocation = path.join(projectDir, filePath)
@@ -43,7 +38,7 @@ const handler: http.RequestListener = (req, res) => {
         return
     }
 
-    if (filePath.startsWith(`/${baseApiPath}`)) {
+    if (filePath.startsWith(`/${BASE_API_PATH}`)) {
         // is api request
         const port = projectPortMap.get(project)
         if (!port) {
@@ -52,7 +47,7 @@ const handler: http.RequestListener = (req, res) => {
             return
         }
 
-        const apiPath = filePath.replace(`/${baseApiPath}`, '')
+        const apiPath = filePath.replace(`/${BASE_API_PATH}`, '')
         streamApiToResponse(req, res, port, apiPath)
     } else {
         // is resource request

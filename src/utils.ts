@@ -1,18 +1,13 @@
 import path from 'path'
 import http from 'http'
-
-const defaultHostname =
-    process.env['NODE_ENV'] === 'development'
-        ? 'onuralpbicertest.com'
-        : 'onuralpbicer.com'
-const hostname = process.env['HOSTNAME'] ?? defaultHostname
+import { HOSTNAME } from './environment'
 
 export interface FSError extends Error {
     code: string
 }
 
 export function getSubdomain(host: string) {
-    const subdomain = host.replace(hostname, '')?.slice(0, -1)
+    const subdomain = host.replace(HOSTNAME, '')?.slice(0, -1)
     return subdomain === 'www' ? '' : subdomain
 }
 

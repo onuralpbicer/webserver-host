@@ -3,8 +3,7 @@ dotenv.config()
 
 import http from 'http'
 import handler from './handler'
-
-const HTTP_PORT = process.env['PORT'] ?? 80
+import { HTTP_PORT } from './environment'
 
 const httpServer = http.createServer(handler)
 
