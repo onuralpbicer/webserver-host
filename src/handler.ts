@@ -1,7 +1,7 @@
 import http from 'http'
 import path from 'path'
 import { getSubdomain, getFilePath, isWithinProject } from './utils'
-import { streamFileToResponse } from './stream'
+import { streamApiToResponse, streamFileToResponse } from './stream'
 import fs from 'fs'
 import chokidar from 'chokidar'
 
@@ -28,9 +28,9 @@ chokidar.watch(baseLocation).on('all', (eventName, filename) => {
 })
 
 const handler: http.RequestListener = (req, res) => {
-    const projectFolder = getSubdomain(req.headers.host ?? '') || 'index'
+    const project = getSubdomain(req.headers.host ?? '') || 'index'
 
-    const projectDir = path.join(baseLocation, projectFolder)
+    const projectDir = path.join(baseLocation, project)
     const filePath = getFilePath(req.url)
 
     const fileLocation = path.join(projectDir, filePath)
@@ -43,7 +43,25 @@ const handler: http.RequestListener = (req, res) => {
         return
     }
 
-    streamFileToResponse(res, fileLocation)
+    if (filePath.startsWith(`/${baseApiPath}`)) {
+        // is api request
+        const port = projectPortMap.get(project)
+        if (!port) {
+            res.statusCode = 404
+            res.end(0)
+            return
+        }
+
+        const apiPath = filePath.replace(`/${baseApiPath}`, '')
+        streamApiToResponse(req, res, port, apiPath)
+    } else {
+        // is resource request
+        if (req.method === 'GET') streamFileToResponse(res, fileLocation)
+        else {
+            res.statusCode = 405
+            res.end()
+        }
+    }
 }
 
 export default handler

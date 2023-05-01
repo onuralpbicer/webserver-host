@@ -10,6 +10,7 @@
     "author": "Onur Alp Bicer",
     "license": "ISC",
     "dependencies": {
+        "chokidar": "^3.5.3",
         "dotenv": "^16.0.3",
         "mime": "^3.0.0"
     },
