@@ -1,7 +1,11 @@
 import path from 'path'
 import http from 'http'
 
-const hostname = process.env['HOSTNAME'] ?? 'onuralpbicertest.com'
+const defaultHostname =
+    process.env['NODE_ENV'] === 'development'
+        ? 'onuralpbicertest.com'
+        : 'onuralpbicer.com'
+const hostname = process.env['HOSTNAME'] ?? defaultHostname
 
 export interface FSError extends Error {
     code: string
