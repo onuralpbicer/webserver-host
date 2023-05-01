@@ -8,8 +8,13 @@ const defaultHostname =
 export const HOSTNAME = process.env['HOSTNAME'] ?? defaultHostname
 export const HTTP_PORT = process.env['PORT'] ?? 80
 
+const defaultProjectBaseLocation =
+    process.env['NODE_ENV'] === 'development'
+        ? path.join(process.cwd(), 'apps')
+        : '/var/www'
+
 export const PROJECTS_BASE_LOCATION =
-    process.env['PROJECTS_BASE_LOCATION'] ?? path.join(process.cwd(), 'apps')
+    process.env['PROJECTS_BASE_LOCATION'] ?? defaultProjectBaseLocation
 
 export const PORT_FILE = process.env['PORT_FILE'] ?? '.port'
 
