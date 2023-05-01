@@ -6,7 +6,7 @@ const defaultHostname =
         : 'onuralpbicer.com'
 
 export const HOSTNAME = process.env['HOSTNAME'] ?? defaultHostname
-export const HTTP_PORT = process.env['PORT'] ?? 80
+export const HTTP_PORT = process.env['HTTP_PORT'] ?? 80
 
 const defaultProjectBaseLocation =
     process.env['NODE_ENV'] === 'development'
