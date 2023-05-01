@@ -23,39 +23,45 @@ chokidar.watch(PROJECTS_BASE_LOCATION).on('all', (eventName, filename) => {
 })
 
 const handler: http.RequestListener = (req, res) => {
-    const project = getSubdomain(req.headers.host ?? '') || 'index'
+    try {
+        const project = getSubdomain(req.headers.host ?? '') || 'index'
 
-    const projectDir = path.join(PROJECTS_BASE_LOCATION, project)
-    const filePath = getFilePath(req.url)
+        const projectDir = path.join(PROJECTS_BASE_LOCATION, project)
+        const filePath = getFilePath(req.url)
 
-    const fileLocation = path.join(projectDir, filePath)
+        const fileLocation = path.join(projectDir, filePath)
 
-    const isWithin = isWithinProject(fileLocation, projectDir)
+        const isWithin = isWithinProject(fileLocation, projectDir)
 
-    if (!isWithin) {
-        res.statusCode = 404
-        res.end()
-        return
-    }
-
-    if (filePath.startsWith(`/${BASE_API_PATH}`)) {
-        // is api request
-        const port = projectPortMap.get(project)
-        if (!port) {
+        if (!isWithin) {
             res.statusCode = 404
-            res.end(0)
+            res.end()
             return
         }
 
-        const apiPath = filePath.replace(`/${BASE_API_PATH}`, '')
-        streamApiToResponse(req, res, port, apiPath)
-    } else {
-        // is resource request
-        if (req.method === 'GET') streamFileToResponse(res, fileLocation)
-        else {
-            res.statusCode = 405
-            res.end()
+        if (filePath.startsWith(`/${BASE_API_PATH}`)) {
+            // is api request
+            const port = projectPortMap.get(project)
+            if (!port) {
+                res.statusCode = 404
+                res.end(0)
+                return
+            }
+
+            const apiPath = filePath.replace(`/${BASE_API_PATH}`, '')
+            streamApiToResponse(req, res, port, apiPath)
+        } else {
+            // is resource request
+            if (req.method === 'GET') streamFileToResponse(res, fileLocation)
+            else {
+                res.statusCode = 405
+                res.end()
+            }
         }
+    } catch (error) {
+        console.error(error)
+        res.statusCode = 500
+        res.end()
     }
 }
 
