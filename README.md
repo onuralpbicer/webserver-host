@@ -20,4 +20,4 @@ Use at your own risk. I am using this on my home raspberrypi but I do NOT guaran
 ## TODO:
 * HTTPs Support
 * Test websocket/socketio support
-* 
+* Logging
